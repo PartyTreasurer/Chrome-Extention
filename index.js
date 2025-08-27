@@ -1,7 +1,11 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js"
-import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-database.js"
+import { getDatabase,
+         ref,
+         push,
+         onValue,
+         remove } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-database.js"
 
-  const firebaseConfig = {
+const firebaseConfig = {
     apiKey: "AIzaSyBIPpDqKfnI0EIHZTzokAenwLNLXHCHCSY",
     authDomain: "leads-tracker-app-82e1d.firebaseapp.com",
     databaseURL: "https://leads-tracker-app-82e1d-default-rtdb.europe-west1.firebasedatabase.app",
@@ -35,12 +39,21 @@ function render(leads) {
     ulEl.innerHTML = listItems
 }
 
+onValue(referenceInDB, function(snapshot) {
+    const snapshotDoesExist = snapshot.exists()
+    if (snapshotDoesExist) {
+        const snapshotValues = snapshot.val()
+        const leads = Object.values(snapshotValues)
+        render(leads)
+    }
+})
+
 deleteBtn.addEventListener("dblclick", function() {
-    
+    remove(referenceInDB)
+    ulEl.innerHTML = ""
 })
 
 inputBtn.addEventListener("click", function() {
     push(referenceInDB, inputEl.value)
-    // Challenge: Import the 'push' function and modify the line above to push inputEl.value to the referenceInDB in the database
-    inputEl.value = ""
+    inputEl.value = "" 
 })
